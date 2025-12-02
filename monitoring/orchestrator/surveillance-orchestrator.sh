@@ -10,29 +10,57 @@
 
 set -euo pipefail
 
-# Get script directory
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Get script directory and resolve symlinks
+SCRIPT_PATH="${BASH_SOURCE[0]}"
+while [[ -L "$SCRIPT_PATH" ]]; do
+  SCRIPT_PATH="$(readlink "$SCRIPT_PATH")"
+  # If relative symlink, resolve relative to original directory
+  if [[ "$SCRIPT_PATH" != /* ]]; then
+    SCRIPT_PATH="$(dirname "${BASH_SOURCE[0]}")/$SCRIPT_PATH"
+  fi
+done
+SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
 readonly SCRIPT_DIR
 
 # Determine common library path
-# Try relative path first (development), then absolute path (installed)
+# Try multiple locations: relative (development), then standard installation paths
+COMMON_LIB=""
+
+# 1. Try relative path (development mode)
 if [[ -f "${SCRIPT_DIR}/../lib/surveillance-common.sh" ]]; then
   COMMON_LIB="${SCRIPT_DIR}/../lib/surveillance-common.sh"
+# 2. Try if script is in /usr/local/bin, look in /usr/local/lib/lexorbital
+elif [[ "$SCRIPT_DIR" == "/usr/local/bin" ]] && [[ -f "/usr/local/lib/lexorbital/surveillance-common.sh" ]]; then
+  COMMON_LIB="/usr/local/lib/lexorbital/surveillance-common.sh"
+# 3. Try standard installation path
 elif [[ -f "/usr/local/lib/lexorbital/surveillance-common.sh" ]]; then
   COMMON_LIB="/usr/local/lib/lexorbital/surveillance-common.sh"
+# 4. Try alternative installation path
 elif [[ -f "/opt/lexorbital/surveillance/lib/surveillance-common.sh" ]]; then
   COMMON_LIB="/opt/lexorbital/surveillance/lib/surveillance-common.sh"
+# 5. Try environment variable
 elif [[ -n "${SURVEILLANCE_LIB_DIR:-}" ]] && [[ -f "${SURVEILLANCE_LIB_DIR}/surveillance-common.sh" ]]; then
   COMMON_LIB="${SURVEILLANCE_LIB_DIR}/surveillance-common.sh"
-else
+# 6. Try if script is in /usr/local/bin, look in same directory (fallback)
+elif [[ "$SCRIPT_DIR" == "/usr/local/bin" ]] && [[ -f "/usr/local/bin/surveillance-common.sh" ]]; then
+  COMMON_LIB="/usr/local/bin/surveillance-common.sh"
+fi
+
+# If still not found, show error with all tried paths
+if [[ -z "$COMMON_LIB" ]] || [[ ! -f "$COMMON_LIB" ]]; then
   echo "Error: surveillance-common.sh not found" >&2
   echo "Tried:" >&2
   echo "  ${SCRIPT_DIR}/../lib/surveillance-common.sh" >&2
   echo "  /usr/local/lib/lexorbital/surveillance-common.sh" >&2
   echo "  /opt/lexorbital/surveillance/lib/surveillance-common.sh" >&2
+  if [[ "$SCRIPT_DIR" == "/usr/local/bin" ]]; then
+    echo "  /usr/local/bin/surveillance-common.sh" >&2
+  fi
   if [[ -n "${SURVEILLANCE_LIB_DIR:-}" ]]; then
     echo "  ${SURVEILLANCE_LIB_DIR}/surveillance-common.sh" >&2
   fi
+  echo "" >&2
+  echo "Please ensure surveillance-common.sh is installed in one of these locations." >&2
   exit 1
 fi
 

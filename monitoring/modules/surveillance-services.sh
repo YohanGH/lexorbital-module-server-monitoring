@@ -10,13 +10,55 @@
 
 set -euo pipefail
 
-# Get script directory
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Get script directory and resolve symlinks
+SCRIPT_PATH="${BASH_SOURCE[0]}"
+while [[ -L "$SCRIPT_PATH" ]]; do
+  SCRIPT_PATH="$(readlink "$SCRIPT_PATH")"
+  if [[ "$SCRIPT_PATH" != /* ]]; then
+    SCRIPT_PATH="$(dirname "${BASH_SOURCE[0]}")/$SCRIPT_PATH"
+  fi
+done
+SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
 readonly SCRIPT_DIR
+
+# Find and load common library
+find_common_lib() {
+  local script_dir="$1"
+  if [[ -f "${script_dir}/../lib/surveillance-common.sh" ]]; then
+    echo "${script_dir}/../lib/surveillance-common.sh"
+    return 0
+  fi
+  if [[ -f "/usr/local/lib/lexorbital/surveillance-common.sh" ]]; then
+    echo "/usr/local/lib/lexorbital/surveillance-common.sh"
+    return 0
+  fi
+  if [[ -f "/opt/lexorbital/surveillance/lib/surveillance-common.sh" ]]; then
+    echo "/opt/lexorbital/surveillance/lib/surveillance-common.sh"
+    return 0
+  fi
+  if [[ -n "${SURVEILLANCE_LIB_DIR:-}" ]] && [[ -f "${SURVEILLANCE_LIB_DIR}/surveillance-common.sh" ]]; then
+    echo "${SURVEILLANCE_LIB_DIR}/surveillance-common.sh"
+    return 0
+  fi
+  return 1
+}
+
+COMMON_LIB=$(find_common_lib "$SCRIPT_DIR")
+if [[ -z "$COMMON_LIB" ]] || [[ ! -f "$COMMON_LIB" ]]; then
+  echo "Error: surveillance-common.sh not found" >&2
+  echo "Tried:" >&2
+  echo "  ${SCRIPT_DIR}/../lib/surveillance-common.sh" >&2
+  echo "  /usr/local/lib/lexorbital/surveillance-common.sh" >&2
+  echo "  /opt/lexorbital/surveillance/lib/surveillance-common.sh" >&2
+  if [[ -n "${SURVEILLANCE_LIB_DIR:-}" ]]; then
+    echo "  ${SURVEILLANCE_LIB_DIR}/surveillance-common.sh" >&2
+  fi
+  exit 1
+fi
 
 # Load common library
 # shellcheck source=../lib/surveillance-common.sh
-source "${SCRIPT_DIR}/../lib/surveillance-common.sh"
+source "$COMMON_LIB"
 
 # ============================================================================
 # Module Configuration

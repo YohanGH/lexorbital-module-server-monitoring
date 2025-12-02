@@ -14,11 +14,14 @@
 # Hostname override (leave empty to use system hostname)
 SURVEILLANCE_HOSTNAME=""
 
-# Base directory for surveillance data
-SURVEILLANCE_DIR="/var/lib/lexorbital/surveillance"
-
-# Log file path
-SURVEILLANCE_LOG_FILE="/var/log/lexorbital/surveillance.log"
+# Note: SURVEILLANCE_DIR and SURVEILLANCE_LOG_FILE are readonly variables
+# defined in surveillance-common.sh. To override them, set them as environment
+# variables before running the scripts:
+#   export SURVEILLANCE_DIR="/custom/path"
+#   export SURVEILLANCE_LOG_FILE="/custom/log/path"
+# Default values:
+#   SURVEILLANCE_DIR="/var/lib/lexorbital/surveillance"
+#   SURVEILLANCE_LOG_FILE="/var/log/lexorbital/surveillance.log"
 
 # Enable debug mode (verbose logging)
 SURVEILLANCE_DEBUG="false"

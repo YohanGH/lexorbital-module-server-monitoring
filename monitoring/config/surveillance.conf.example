@@ -1,0 +1,174 @@
+# ============================================================================
+# LexOrbital Surveillance Configuration
+# ============================================================================
+# Configuration file for the LexOrbital surveillance system
+#
+# Copy this file to /var/lib/lexorbital/surveillance/config/surveillance.conf
+# and adjust values as needed.
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# System Configuration
+# ----------------------------------------------------------------------------
+
+# Hostname override (leave empty to use system hostname)
+SURVEILLANCE_HOSTNAME=""
+
+# Base directory for surveillance data
+SURVEILLANCE_DIR="/var/lib/lexorbital/surveillance"
+
+# Log file path
+SURVEILLANCE_LOG_FILE="/var/log/lexorbital/surveillance.log"
+
+# Enable debug mode (verbose logging)
+SURVEILLANCE_DEBUG="false"
+
+# ----------------------------------------------------------------------------
+# GDPR & Privacy Settings
+# ----------------------------------------------------------------------------
+
+# Enable IP pseudonymization (recommended: true)
+GDPR_PSEUDONYMIZE_IPS="true"
+
+# Enable username pseudonymization (recommended: true)
+GDPR_PSEUDONYMIZE_USERNAMES="true"
+
+# Data retention period in days
+GDPR_RETENTION_DAYS="30"
+
+# Enable audit logging
+GDPR_ENABLE_AUDIT_LOG="true"
+
+# ----------------------------------------------------------------------------
+# Modules Configuration
+# ----------------------------------------------------------------------------
+
+# Enable/disable individual modules
+MODULE_RESOURCES_ENABLED="true"
+MODULE_SECURITY_ENABLED="true"
+MODULE_SERVICES_ENABLED="true"
+MODULE_NETWORK_ENABLED="true"
+MODULE_INTEGRITY_ENABLED="true"
+
+# ----------------------------------------------------------------------------
+# Thresholds - Resources Module
+# ----------------------------------------------------------------------------
+
+# CPU usage thresholds (percentage)
+THRESHOLD_CPU_WARNING="70"
+THRESHOLD_CPU_CRITICAL="85"
+
+# Memory usage thresholds (percentage)
+THRESHOLD_MEMORY_WARNING="75"
+THRESHOLD_MEMORY_CRITICAL="90"
+
+# Disk usage thresholds (percentage)
+THRESHOLD_DISK_WARNING="80"
+THRESHOLD_DISK_CRITICAL="90"
+
+# Inode usage thresholds (percentage)
+THRESHOLD_INODE_WARNING="80"
+THRESHOLD_INODE_CRITICAL="90"
+
+# Load average threshold (per CPU core)
+THRESHOLD_LOAD_WARNING="2.0"
+THRESHOLD_LOAD_CRITICAL="4.0"
+
+# ----------------------------------------------------------------------------
+# Thresholds - Security Module
+# ----------------------------------------------------------------------------
+
+# SSH failed login attempts (per IP, last 24h)
+THRESHOLD_SSH_FAILED_WARNING="5"
+THRESHOLD_SSH_FAILED_CRITICAL="10"
+
+# Brute force detection (consecutive failures)
+THRESHOLD_BRUTE_FORCE="10"
+
+# Sudo anomaly detection
+SUDO_ALLOWED_USERS="root,admin,deploy"
+
+# ----------------------------------------------------------------------------
+# Thresholds - Services Module
+# ----------------------------------------------------------------------------
+
+# Maximum critical errors in journal (last hour)
+THRESHOLD_JOURNAL_ERRORS_WARNING="5"
+THRESHOLD_JOURNAL_ERRORS_CRITICAL="20"
+
+# Maximum failed systemd units
+THRESHOLD_FAILED_UNITS_WARNING="1"
+THRESHOLD_FAILED_UNITS_CRITICAL="3"
+
+# ----------------------------------------------------------------------------
+# Thresholds - Network Module
+# ----------------------------------------------------------------------------
+
+# Allowed open ports (comma-separated)
+NETWORK_ALLOWED_PORTS="22,80,443,3000,5432"
+
+# Maximum unexpected open ports
+THRESHOLD_UNEXPECTED_PORTS_WARNING="1"
+THRESHOLD_UNEXPECTED_PORTS_CRITICAL="3"
+
+# ----------------------------------------------------------------------------
+# Integrity Module
+# ----------------------------------------------------------------------------
+
+# Paths to monitor for changes (comma-separated)
+INTEGRITY_MONITORED_PATHS="/etc/passwd,/etc/shadow,/etc/group,/etc/ssh/sshd_config,/etc/nginx/nginx.conf"
+
+# Store checksums in
+INTEGRITY_CHECKSUM_FILE="${SURVEILLANCE_DIR}/checksums/file-integrity.db"
+
+# ----------------------------------------------------------------------------
+# Alerting Configuration
+# ----------------------------------------------------------------------------
+
+# Enable alerts
+ALERTS_ENABLED="true"
+
+# Alert methods (comma-separated: email,webhook,console)
+ALERT_METHODS="console"
+
+# Email alerts
+ALERT_EMAIL_ENABLED="false"
+ALERT_EMAIL_RECIPIENTS=""
+ALERT_EMAIL_FROM="surveillance@lexorbital.local"
+
+# Webhook alerts (for Console Orbitale)
+ALERT_WEBHOOK_ENABLED="false"
+ALERT_WEBHOOK_URL=""
+ALERT_WEBHOOK_TOKEN=""
+
+# Minimum severity to trigger alert (info, warning, critical)
+ALERT_MIN_SEVERITY="warning"
+
+# ----------------------------------------------------------------------------
+# API Integration (Console Orbitale)
+# ----------------------------------------------------------------------------
+
+# Enable API reporting
+API_ENABLED="false"
+
+# API endpoint
+API_ENDPOINT=""
+
+# API authentication token
+API_TOKEN=""
+
+# API timeout (seconds)
+API_TIMEOUT="10"
+
+# ----------------------------------------------------------------------------
+# Advanced Settings
+# ----------------------------------------------------------------------------
+
+# Parallel execution of modules
+PARALLEL_EXECUTION="true"
+
+# Maximum execution time per module (seconds)
+MODULE_TIMEOUT="60"
+
+# Enable JSON schema validation (requires ajv-cli)
+VALIDATE_JSON_SCHEMA="false"

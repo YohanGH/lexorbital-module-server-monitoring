@@ -1,0 +1,164 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lexorbital.io/schemas/surveillance-report.v1.json",
+  "title": "LexOrbital Surveillance Report",
+  "description": "JSON Schema for LexOrbital surveillance module reports",
+  "type": "object",
+  "required": ["metadata", "status", "checks"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": ["module", "version", "timestamp", "hostname", "executionTime"],
+      "properties": {
+        "module": {
+          "type": "string",
+          "enum": ["resources", "security", "services", "network", "integrity"],
+          "description": "Surveillance module name"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Schema version (semver)"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp"
+        },
+        "hostname": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Server hostname"
+        },
+        "executionTime": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Execution time in milliseconds"
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["healthy", "warning", "critical", "unknown"],
+      "description": "Overall health status"
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "status", "message"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9._-]+$",
+            "description": "Unique check identifier"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Human-readable check name"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["healthy", "warning", "critical", "unknown"]
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Status message"
+          },
+          "value": {
+            "oneOf": [
+              { "type": "number" },
+              { "type": "string" },
+              { "type": "boolean" }
+            ],
+            "description": "Measured value"
+          },
+          "threshold": {
+            "type": "object",
+            "required": ["warning", "critical"],
+            "properties": {
+              "warning": {
+                "type": "number"
+              },
+              "critical": {
+                "type": "number"
+              },
+              "unit": {
+                "type": "string"
+              }
+            }
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["value", "unit", "timestamp"],
+        "properties": {
+          "value": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "labels": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "alerts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["severity", "source", "message", "timestamp"],
+        "properties": {
+          "severity": {
+            "type": "string",
+            "enum": ["info", "warning", "critical"]
+          },
+          "source": {
+            "type": "string",
+            "minLength": 1
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "id": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

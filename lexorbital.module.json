@@ -1,0 +1,66 @@
+{
+  "$schema": "../lexorbital-template-module/schemas/module-manifest.v2.schema.json",
+  "name": "lexorbital-module-server-monitoring",
+  "version": "1.0.0",
+  "type": "infra",
+  "description": "Multi-layer server surveillance and monitoring system for the LexOrbital ecosystem, with GDPR-compliant reporting and automated alerting.",
+  "maintainer": {
+    "name": "YohanGH",
+    "contact": "https://github.com/YohanGH"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YohanGH/lexorbital-module-server-monitoring"
+  },
+  "license": "MIT",
+  "tooling": {
+    "pre-commit": false,
+    "lint": {
+      "shellcheck": true,
+      "shfmt": true
+    }
+  },
+  "dependencies": {
+    "system": {
+      "bash": ">=4.0",
+      "jq": ">=1.5",
+      "systemd": ">=232"
+    },
+    "optional": {
+      "sysstat": ">=11.0",
+      "net-tools": ">=1.60"
+    }
+  },
+  "structure": {
+    "monitoring/config": "Configuration files and examples",
+    "monitoring/lib": "Shared libraries and utilities",
+    "monitoring/modules": "Surveillance modules (resources, security, services, network, integrity)",
+    "monitoring/orchestrator": "Main orchestrator for module coordination",
+    "monitoring/schemas": "JSON schemas for report validation",
+    "monitoring/types": "TypeScript type definitions",
+    "monitoring/tests": "Unit and integration tests",
+    "systemd": "Systemd services and timers for automation",
+    "docs": "Complete documentation (architecture, operations, compliance)"
+  },
+  "compliance": {
+    "gdpr": true,
+    "security": ["OWASP", "ANSSI"],
+    "dataProcessing": {
+      "pseudonymization": true,
+      "retention": "30 days",
+      "minimization": true
+    }
+  },
+  "features": {
+    "modules": ["resources", "security", "services", "network", "integrity"],
+    "checks": 34,
+    "automation": "systemd-timers",
+    "reporting": "json",
+    "alerting": ["email", "webhook"]
+  },
+  "documentation": {
+    "readme": "https://github.com/YohanGH/lexorbital-module-server-monitoring#readme",
+    "language": "fr"
+  }
+}
+

@@ -1,0 +1,121 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lexorbital.io/schemas/global-surveillance-report.v1.json",
+  "title": "LexOrbital Global Surveillance Report",
+  "description": "JSON Schema for aggregated surveillance reports from all modules",
+  "type": "object",
+  "required": ["metadata", "globalStatus", "modules", "summary", "alerts"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": ["version", "timestamp", "hostname", "totalExecutionTime", "modulesExecuted"],
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Schema version (semver)"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp"
+        },
+        "hostname": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Server hostname"
+        },
+        "totalExecutionTime": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Total execution time in milliseconds"
+        },
+        "modulesExecuted": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Number of modules executed"
+        },
+        "modulesFailed": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Number of modules that failed"
+        }
+      }
+    },
+    "globalStatus": {
+      "type": "string",
+      "enum": ["healthy", "warning", "critical", "unknown"],
+      "description": "Global health status (worst-case from all modules)"
+    },
+    "modules": {
+      "type": "object",
+      "properties": {
+        "resources": { "$ref": "surveillance-report.schema.json" },
+        "security": { "$ref": "surveillance-report.schema.json" },
+        "services": { "$ref": "surveillance-report.schema.json" },
+        "network": { "$ref": "surveillance-report.schema.json" },
+        "integrity": { "$ref": "surveillance-report.schema.json" }
+      },
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "required": ["totalChecks", "healthyChecks", "warningChecks", "criticalChecks"],
+      "properties": {
+        "totalChecks": {
+          "type": "number",
+          "minimum": 0
+        },
+        "healthyChecks": {
+          "type": "number",
+          "minimum": 0
+        },
+        "warningChecks": {
+          "type": "number",
+          "minimum": 0
+        },
+        "criticalChecks": {
+          "type": "number",
+          "minimum": 0
+        },
+        "unknownChecks": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "alerts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["severity", "source", "message", "timestamp"],
+        "properties": {
+          "severity": {
+            "type": "string",
+            "enum": ["info", "warning", "critical"]
+          },
+          "source": {
+            "type": "string",
+            "minLength": 1
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "id": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
+

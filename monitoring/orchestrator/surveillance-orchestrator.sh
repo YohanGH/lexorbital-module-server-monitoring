@@ -14,9 +14,31 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly SCRIPT_DIR
 
+# Determine common library path
+# Try relative path first (development), then absolute path (installed)
+if [[ -f "${SCRIPT_DIR}/../lib/surveillance-common.sh" ]]; then
+  COMMON_LIB="${SCRIPT_DIR}/../lib/surveillance-common.sh"
+elif [[ -f "/usr/local/lib/lexorbital/surveillance-common.sh" ]]; then
+  COMMON_LIB="/usr/local/lib/lexorbital/surveillance-common.sh"
+elif [[ -f "/opt/lexorbital/surveillance/lib/surveillance-common.sh" ]]; then
+  COMMON_LIB="/opt/lexorbital/surveillance/lib/surveillance-common.sh"
+elif [[ -n "${SURVEILLANCE_LIB_DIR:-}" ]] && [[ -f "${SURVEILLANCE_LIB_DIR}/surveillance-common.sh" ]]; then
+  COMMON_LIB="${SURVEILLANCE_LIB_DIR}/surveillance-common.sh"
+else
+  echo "Error: surveillance-common.sh not found" >&2
+  echo "Tried:" >&2
+  echo "  ${SCRIPT_DIR}/../lib/surveillance-common.sh" >&2
+  echo "  /usr/local/lib/lexorbital/surveillance-common.sh" >&2
+  echo "  /opt/lexorbital/surveillance/lib/surveillance-common.sh" >&2
+  if [[ -n "${SURVEILLANCE_LIB_DIR:-}" ]]; then
+    echo "  ${SURVEILLANCE_LIB_DIR}/surveillance-common.sh" >&2
+  fi
+  exit 1
+fi
+
 # Load common library
 # shellcheck source=../lib/surveillance-common.sh
-source "${SCRIPT_DIR}/../lib/surveillance-common.sh"
+source "$COMMON_LIB"
 
 # ============================================================================
 # Orchestrator Configuration

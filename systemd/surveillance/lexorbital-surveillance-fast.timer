@@ -1,0 +1,20 @@
+[Unit]
+Description=LexOrbital Fast Surveillance Timer (every 5 minutes)
+Documentation=https://github.com/YohanGH/lexorbital-module-server
+Requires=lexorbital-surveillance-fast.service
+
+[Timer]
+# Run 5 minutes after boot
+OnBootSec=5min
+
+# Run every 5 minutes
+OnUnitActiveSec=5min
+
+# Accuracy
+AccuracySec=1min
+
+# Persistent across reboots
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,21 @@
+[Unit]
+Description=LexOrbital File Integrity Timer (daily)
+Documentation=https://github.com/YohanGH/lexorbital-module-server
+Requires=lexorbital-surveillance-integrity.service
+
+[Timer]
+# Run 15 minutes after boot
+OnBootSec=15min
+
+# Run daily at 3 AM
+OnCalendar=daily
+OnCalendar=03:00
+
+# Accuracy
+AccuracySec=10min
+
+# Persistent across reboots
+Persistent=true
+
+[Install]
+WantedBy=timers.target

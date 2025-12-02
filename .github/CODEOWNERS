@@ -1,0 +1,9 @@
+# CODEOWNERS for LexOrbital modules
+# Cf. https://github.com/YohanGH/lexorbital-template-module
+
+# Default owners of the entire repository
+
+@lexorbital/core-team
+@YohanGH
+
+

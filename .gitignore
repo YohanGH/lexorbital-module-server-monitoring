@@ -1,0 +1,51 @@
+# Node.js (si jamais utilisé ponctuellement)
+node_modules/
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# Ansible
+*.retry
+ansible/inventories/*_vault*
+ansible/*.log
+
+# Logs
+*.log
+logs/
+
+# Secrets et fichiers sensibles
+.env
+.env.*
+*.pem
+*.key
+*.crt
+id_rsa*
+*.secret
+
+# Backups
+*.bak
+*.backup
+*.sql.gz
+backup/*.tar.gz
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.cursor/
+.idea/
+*.swp
+*.swo
+*~
+
+# Terraform (si ajouté par la suite)
+.terraform/
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
+
+# Docker volumes
+volumes/
+data/

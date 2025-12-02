@@ -1,0 +1,23 @@
+[Unit]
+Description=LexOrbital Full Surveillance Timer (hourly)
+Documentation=https://github.com/YohanGH/lexorbital-module-server
+Requires=lexorbital-surveillance-full.service
+
+[Timer]
+# Run 10 minutes after boot
+OnBootSec=10min
+
+# Run every hour
+OnUnitActiveSec=1h
+
+# Also run at fixed times (top of every hour)
+OnCalendar=hourly
+
+# Accuracy
+AccuracySec=5min
+
+# Persistent across reboots
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -348,36 +348,43 @@ add_check() {
   
   require_jq
   
-  local check
-  check=$(cat <<EOF
-{
-  "id": "${check_id}",
-  "name": "${check_name}",
-  "status": "${status}",
-  "message": $(json_escape "$message")
-EOF
-)
+  # Build check object using jq for proper JSON construction
+  local check_json
+  check_json=$(jq -n \
+    --arg id "$check_id" \
+    --arg name "$check_name" \
+    --arg status "$status" \
+    --arg message "$message" \
+    '{
+      id: $id,
+      name: $name,
+      status: $status,
+      message: $message
+    }')
   
   # Add value if provided
   if [[ -n "$value" ]]; then
     # Detect if value is numeric
     if [[ "$value" =~ ^[0-9]+\.?[0-9]*$ ]]; then
-      check=$(echo "$check" | jq ". + {\"value\": ${value}}")
+      # Numeric value: use --arg and let jq convert to number
+      check_json=$(echo "$check_json" | jq --arg val "$value" '. + {value: ($val | tonumber)}')
     else
-      check=$(echo "$check" | jq ". + {\"value\": $(json_escape "$value")}")
+      # String value: use --arg as-is
+      check_json=$(echo "$check_json" | jq --arg val "$value" '. + {value: $val}')
     fi
   fi
   
   # Add threshold if provided
   if [[ -n "$warning_threshold" ]] && [[ -n "$critical_threshold" ]]; then
-    check=$(echo "$check" | jq ". + {\"threshold\": {\"warning\": ${warning_threshold}, \"critical\": ${critical_threshold}}}")
+    # Thresholds are always numeric: use --arg and convert to number
+    check_json=$(echo "$check_json" | jq \
+      --arg warning "$warning_threshold" \
+      --arg critical "$critical_threshold" \
+      '. + {threshold: {warning: ($warning | tonumber), critical: ($critical | tonumber)}}')
   fi
   
-  # Close check object
-  check=$(echo "$check" | jq '.')
-  
-  # Add check to report
-  echo "$report" | jq ".checks += [${check}]"
+  # Add check to report using --argjson to properly pass the JSON object
+  echo "$report" | jq --argjson check "$check_json" '.checks += [$check]'
 }
 
 # Add alert to report
